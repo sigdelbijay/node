@@ -2,6 +2,9 @@ var Emitter = require('events');
 var util = require('util');
 
 function GreetR(){
+    //to get properties and methods defined in Emitter constructer function
+    //for full inheritance
+    Emitter.call(this);
     this.greeting = 'Hello World';
 }
 
@@ -12,18 +15,15 @@ function GreetR(){
 // prototype property later
 util.inherits(GreetR, Emitter);
 
-GreetR.prototype.greet = function(data){
-    console.log(this.greeting + ' ' + data);
-    this.emit('greet', data);
-    // pass the data as parameter to all the listener function in array,
-    // that will be invoked
+GreetR.prototype.greet = function(){
+    console.log(this.greeting);
+    this.emit('greet');
 }
 
 var greeter1 = new GreetR();
 
-greeter1.on('greet', function(data){
-    console.log('Someone greeted: ' + data);
+greeter1.on('greet', function(){
+    console.log('Someone greeted');
 });
 
-greeter1.greet('bijay');
-
+greeter1.greet();
