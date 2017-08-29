@@ -1,23 +1,29 @@
-// node event emitter relies on magic string
-// magic string: string that has some special meaning in our code
-// this is bad it makes it easy for a typo to cause a bug and hard for
-// tool to help us find it.
-// we solve this problem here using a different module for event names i.e
-// the events object properties
-// There are many modules in node that are built on top of event emitter. :)
-
 var Emitter = require('events');
-var eventConfig = require('./config').events;
-var emtr = new Emitter();
+var util = require('util');
 
-emtr.on(eventConfig.GREET /* OR 'greet'  */, function(){
-    console.log('Somewhere, someone said hello');
+function GreetR(){
+    this.greeting = 'Hello World';
+}
+
+// any object created from GreetR consturcter function get access to
+// properties and methods(eg. on, emit) attached to prototype property of
+// Emitter constucter function i.e GreetR.prototype = Object.create(Emitter.prototype)
+// Here, greet function is attached to GreetR constructer function
+// prototype property later
+util.inherits(GreetR, Emitter);
+
+GreetR.prototype.greet = function(data){
+    console.log(this.greeting + ' ' + data);
+    this.emit('greet', data);
+    // pass the data as parameter to all the listener function in array,
+    // that will be invoked
+}
+
+var greeter1 = new GreetR();
+
+greeter1.on('greet', function(data){
+    console.log('Someone greeted: ' + data);
 });
 
-emtr.on(eventConfig.GREET, function(){
-    console.log('A greeting occured');
-});
-
-console.log('hello');
-emtr.emit(eventConfig.GREET);
+greeter1.greet('bijay');
 
